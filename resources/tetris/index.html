@@ -24,33 +24,7 @@
     var tetronimo = null;
 
     var cursors;
-
-/*
-    function Tetronimo(shape, topLeft) {
-
-        this.topLeft = topLeft;
-        this.newTopLeft = 0;
-
-        this.shape = shape;
-        this.squares = new Array();
-
-
-       /!* this.squares[0] = game.add.sprite(topLeft.x * cubesize, topLeft.y * cubesize, 'cube');
-
-        this.squares[1] = game.add.sprite(topLeft.x * cubesize + cubesize, topLeft.y * cubesize, 'cube');
-
-        this.squares[2] = game.add.sprite(topLeft.x * cubesize, topLeft.y * cubesize + cubesize, 'cube');
-
-        this.squares[3] = game.add.sprite(topLeft.x * cubesize+cubesize, topLeft.y * cubesize+cubesize, 'cube');*!/
-
-        var counter = 0;
-        for (var i=0;i<shape.length;i++)
-            for(var j = 0; j<shape[i].length; j++)
-                if(shape[i][j]!=0) {
-                    this.squares[counter++] = game.add.sprite(topLeft.x * cubesize+j*cubesize, topLeft.y * cubesize+i*cubesize, 'cube');
-                }
-
-    }*/
+    
 
     function preload() {
 
@@ -91,9 +65,6 @@
 
     }
     function createTetronimo(){
-
-
-
 
         var topLeft = new Phaser.Point(4,4);
         tetronimo = new Tetronimo(this.game,topLeft,0,'J');
