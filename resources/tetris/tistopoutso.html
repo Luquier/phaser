@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Phaser - Making your first game, part 3</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+    var landed = [];
+
+    var cubesize = 32;
+
+    var tetronimo = null;
+
+    var tetronimoBody;
+
+
+    function Tetronimo(shape, topLeft) {
+
+        this.topLeft = topLeft;
+        this.newTopLeft = 0;
+
+        this.shape = shape;
+
+    }
+
+    function preload() {
+
+        game.load.image('cube', 'png/element_red_square.png');
+    }
+
+    function create() {
+
+
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        createTetronimo();
+        tetronimo.enableBody = true;
+
+        for (var i=0;i<16;i++) {
+            landed[i] = [];
+            for(var j = 0; j<10; j++)
+                landed[i][j]=0;
+        }
+
+
+        game.time.events.loop(Phaser.Timer.SECOND * 1, moveTetronimo,  this);
+
+
+        for (var i=0;i<tetronimo.shape.length;i++)
+            for(var j = 0; j<tetronimo.shape[i].length; j++)
+                if(tetronimo.shape[i][j]!=0) {
+                    //tetronimoTile = game.add.group();
+
+                    tetronimoBody = game.add.sprite(tetronimo.topLeft.x * cubesize+i*cubesize, tetronimo.topLeft.y * cubesize+j*cubesize, 'cube');
+                }
+
+    }
+
+    function update() {
+    }
+
+    function moveTetronimo() {
+        tetronimoBody.y += cubesize;
+
+    }
+    function createTetronimo(){
+
+
+        var shape = [[1,1],[1,1]]       ;
+        var topLeft = new Phaser.Point(4,4);
+        tetronimo = new Tetronimo(shape,topLeft);
+
+    }
+
+
+</script>
+
+</body>
+</html>

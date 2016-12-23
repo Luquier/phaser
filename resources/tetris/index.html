@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Phaser - Making your first game, part 3</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+    var landed = [];
+
+    var cubesize = 32;
+
+    var tetronimo = null;
+
+    var tetronimoBody;
+
+
+    function Tetronimo(shape, topLeft) {
+
+        this.topLeft = topLeft;
+        this.newTopLeft = 0;
+
+        this.shape = shape;
+        this.squares = new Array();
+
+
+       /* this.squares[0] = game.add.sprite(topLeft.x * cubesize, topLeft.y * cubesize, 'cube');
+
+        this.squares[1] = game.add.sprite(topLeft.x * cubesize + cubesize, topLeft.y * cubesize, 'cube');
+
+        this.squares[2] = game.add.sprite(topLeft.x * cubesize, topLeft.y * cubesize + cubesize, 'cube');
+
+        this.squares[3] = game.add.sprite(topLeft.x * cubesize+cubesize, topLeft.y * cubesize+cubesize, 'cube');*/
+
+        var counter = 0;
+        for (var i=0;i<shape.length;i++)
+            for(var j = 0; j<shape[i].length; j++)
+                if(shape[i][j]!=0) {
+                    this.squares[counter++] = game.add.sprite(topLeft.x * cubesize+i*cubesize, topLeft.y * cubesize+j*cubesize, 'cube');
+                }
+
+    }
+
+    function preload() {
+
+        game.load.image('cube', 'png/element_red_square.png');
+    }
+
+    function create() {
+
+
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        createTetronimo();
+        tetronimo.enableBody = true;
+
+        for (var i=0;i<16;i++) {
+            landed[i] = [];
+            for(var j = 0; j<10; j++)
+                landed[i][j]=0;
+        }
+
+
+        game.time.events.loop(Phaser.Timer.SECOND * 1, moveTetronimo,  this);
+
+       /* tetronimoBody = game.add.sprite(tetronimo.topLeft.x * cubesize, tetronimo.topLeft.y * cubesize, 'cube');
+
+        for (var i=0;i<tetronimo.shape.length;i++)
+            for(var j = 0; j<tetronimo.shape[i].length; j++)
+                if(i==0 && j==0)
+                    continue;
+                else
+                    if(tetronimo.shape[i][j]!=0) {
+                        var newTile = game.add.sprite(i*cubesize, j*cubesize, 'cube');
+                        tetronimoBody.addChild(newTile);
+                    }
+
+*/
+
+        cursors = game.input.keyboard.createCursorKeys();
+
+    }
+
+    function update() {
+
+        if (cursors.up.isDown)
+        {
+            rotate();
+        }
+
+
+    }
+
+    function moveTetronimo() {
+        for(var i=0;i<tetronimo.squares.length;i++){
+
+            tetronimo.squares[i].y += cubesize;
+
+        }
+
+    }
+    function createTetronimo(){
+
+        var shape = [[1,1,1],[1,0,0]] ;
+        var topLeft = new Phaser.Point(4,4);
+        tetronimo = new Tetronimo(shape,topLeft);
+
+    }
+
+    function rotate(){
+
+
+            var x1,x2,y1,y2;
+
+            for (var i=0; i<tetronimo.squares.length; i++){
+
+
+
+                // Get the center of the current square
+
+                x1 = tetronimo.squares[i].x;
+
+                y1 = tetronimo.squares[i].y;
+
+
+
+                // Move the square so it's positioned at the origin
+
+                x1 -= tetronimo.topLeft.x;
+
+                y1 -= tetronimo.topLeft.y;
+
+                // Do the actual rotation
+
+                x2 = - y1;
+
+                y2 = x1;
+
+
+
+                // Move the square back to its proper location
+
+                x2 += tetronimo.topLeft.x;
+
+                y2 += tetronimo.topLeft.y;
+
+
+
+                // Set the square's location to our temporary variables
+
+                tetronimo.squares[i].x = x2;
+
+                tetronimo.squares[i].y = y2;
+
+            }
+
+
+    }
+
+
+
+</script>
+
+</body>
+</html>

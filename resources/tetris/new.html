@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Phaser - Making your first game, part 3</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+    var landed = [];
+
+    var cubesize = 32;
+
+    var tetronimo = null;
+
+    var tetronimoBody;
+
+
+    function Tetronimo(topLeft){
+
+        this.topLeft = topLeft;
+
+        this.squares = new Array();
+
+
+        this.setupsquares(topLeft);
+
+    };
+
+    function preload() {
+
+        game.load.image('cube', 'png/element_red_square.png');
+    }
+
+    function create() {
+
+
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        var topLeft = new Phaser.Point(4,4);
+        var tetronimo2 = new Tetronimo(topLeft);
+       /* tetronimo.enableBody = true;
+
+        for (var i=0;i<16;i++) {
+            landed[i] = [];
+            for(var j = 0; j<10; j++)
+                landed[i][j]=0;
+        }
+
+
+        game.time.events.loop(Phaser.Timer.SECOND * 1, moveTetronimo,  this);
+
+        tetronimoBody = game.add.sprite(tetronimo.topLeft.x * cubesize, tetronimo.topLeft.y * cubesize, 'cube');
+
+        for (var i=0;i<tetronimo.shape.length;i++)
+            for(var j = 0; j<tetronimo.shape[i].length; j++)
+                if(i==0 && j==0)
+                    continue;
+                else
+                if(tetronimo.shape[i][j]!=0) {
+                    var newTile = game.add.sprite(i*cubesize, j*cubesize, 'cube');
+                    tetronimoBody.addChild(newTile);
+                }
+
+
+        */
+    }
+
+    function update() {
+    }
+
+    function moveTetronimo() {
+        tetronimoBody.y += cubesize;
+
+    }
+    function setupsquares(topLeft){
+
+        this.squares[0] = game.add.sprite(0, 0, 'cube');
+
+        this.squares[1] = game.add.sprite(topLeft.x * cubesize + cubesize, topLeft.y * cubesize, 'cube');
+
+        this.squares[2] = game.add.sprite(topLeft.x * cubesize, topLeft.y * cubesize + cubesize, 'cube');
+
+        this.squares[3] = game.add.sprite(topLeft.x * cubesize+cubesize, topLeft.y * cubesize+cubesize, 'cube');
+
+
+    }
+
+
+</script>
+
+</body>
+</html>
