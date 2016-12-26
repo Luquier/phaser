@@ -24,7 +24,9 @@
     var tetronimo = null;
 
     var cursors;
-    
+
+    var moveLeftKey;
+    var moveRightKey;
 
     function preload() {
 
@@ -37,6 +39,7 @@
         game.physics.startSystem(Phaser.Physics.ARCADE);
         createTetronimo();
         tetronimo.enableBody = true;
+        game.input.mouse.capture = true;
 
         for (var i=0;i<16;i++) {
             landed[i] = [];
@@ -45,29 +48,39 @@
         }
 
 
-        game.time.events.loop(Phaser.Timer.SECOND * 1, moveTetronimo,  this);
+        game.time.events.loop(Phaser.Timer.SECOND * 1, progressTetronimo,  this);
 
         cursors = game.input.keyboard.createCursorKeys();
+         moveLeftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+         moveRightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 
     }
 
     function update() {
 
-        if (cursors.up.isDown)
+        game.input.onDown.add(rotate, this);
+        //cursors.up.isDown.add(progressTetronimo,this);
+        if (moveLeftKey.justUp)
         {
-            rotate();
+
+            tetronimo.moveTetronimo('left');
+        }
+        else if (moveRightKey.justUp)
+        {
+
+            tetronimo.moveTetronimo('right');
         }
 
 
     }
-    function moveTetronimo() {
+    function progressTetronimo() {
         tetronimo.moveTetronimo('down');
 
     }
     function createTetronimo(){
 
         var topLeft = new Phaser.Point(4,4);
-        tetronimo = new Tetronimo(this.game,topLeft,0,'J');
+        tetronimo = new Tetronimo(this.game,topLeft,0,'T');
 
     }
 
