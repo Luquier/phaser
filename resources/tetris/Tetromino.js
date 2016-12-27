@@ -2,39 +2,39 @@ var cubesize = 32;
 
 var shapeJ = [
     [[1, 1, 0],
-    [1, 0, 0],
-    [1, 0, 0]],
+        [1, 0, 0],
+        [1, 0, 0]],
 
     [[1, 1, 1],
-    [0, 0, 1]],
+        [0, 0, 1]],
 
     [[0, 1, 0],
-    [0, 1, 0],
-    [1, 1, 0]],
+        [0, 1, 0],
+        [1, 1, 0]],
 
     [[1, 0, 0],
-    [1, 1, 1]],
+        [1, 1, 1]],
 ];
 
 var shapeT = [
     [[1, 1, 1],
-    [0, 1, 0]],
+        [0, 1, 0]],
 
     [[0, 1],
-    [1, 1],
-    [0, 1]],
+        [1, 1],
+        [0, 1]],
 
     [[0, 1, 0],
-    [1, 1, 1]],
+        [1, 1, 1]],
 
     [[1, 0],
-    [1, 1],
-    [1, 0]],
+        [1, 1],
+        [1, 0]],
 
 ];
 
 
-Tetronimo = function (game, topLeft, currentRotation, type) {
+Tetromino = function (game, topLeft, currentRotation, type) {
 
 
     this.topLeft = topLeft;
@@ -49,30 +49,30 @@ Tetronimo = function (game, topLeft, currentRotation, type) {
 };
 
 
-Tetronimo.prototype = {
+Tetromino.prototype = {
 
     drawsquares: function () {
 
-        var shape;
+        this.shape = null;
 
         switch (this.type){
             case 'J':
-                shape = shapeJ[this.currentRotation];
+                this.shape = shapeJ[this.currentRotation];
                 break;
             case 'T':
-                shape = shapeT[this.currentRotation];
+                this.shape = shapeT[this.currentRotation];
                 break;
 
         }
 
         var counter = 0;
-        for (var i = 0; i < shape.length; i++)
-            for (var j = 0; j < shape[i].length; j++)
-                if (shape[i][j] != 0)
+        for (var i = 0; i < this.shape.length; i++)
+            for (var j = 0; j < this.shape[i].length; j++)
+                if (this.shape[i][j] != 0)
                     this.squares[counter++] = game.add.sprite(this.topLeft.x * cubesize + j * cubesize, this.topLeft.y * cubesize + i * cubesize, 'cube');
     },
 
-    moveTetronimo: function (dir) {
+    moveTetromino: function (dir) {
 
 
         switch (dir) {
@@ -115,13 +115,13 @@ Tetronimo.prototype = {
 
     },
 
-    rotateTetronimo : function () {
+    rotateTetromino : function () {
 
 
-        tetronimo.squares[0].destroy();
-        tetronimo.squares[1].destroy();
-        tetronimo.squares[2].destroy();
-        tetronimo.squares[3].destroy();
+        tetromino.squares[0].destroy();
+        tetromino.squares[1].destroy();
+        tetromino.squares[2].destroy();
+        tetromino.squares[3].destroy();
 
         if(currentRotation<4) currentRotation++;
         else currentRotation = 0;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 3</title>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-    <script src="Tetronimo.js"></script>
+    <script src="Tetromino.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -21,7 +21,7 @@
 
     var cubesize = 32;
 
-    var tetronimo = null;
+    var tetromino = null;
 
     var cursors;
 
@@ -37,18 +37,19 @@
 
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        createTetronimo();
-        tetronimo.enableBody = true;
+        createTetromino();
+        tetromino.enableBody = true;
         game.input.mouse.capture = true;
 
-        for (var i=0;i<16;i++) {
+        for (var i=0;i<15;i++) {
             landed[i] = [];
-            for(var j = 0; j<10; j++)
+            for(var j = 0; j<15; j++)
                 landed[i][j]=0;
         }
 
 
-        game.time.events.loop(Phaser.Timer.SECOND * 1, progressTetronimo,  this);
+
+        game.time.events.loop(Phaser.Timer.SECOND * 1, progressTetromino,  this);
 
         cursors = game.input.keyboard.createCursorKeys();
         moveLeftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -59,42 +60,74 @@
     function update() {
 
         game.input.onDown.add(rotate, this);
-        //cursors.up.isDown.add(progressTetronimo,this);
+        //cursors.up.isDown.add(progressTetromino,this);
         if (moveLeftKey.justUp)
         {
 
-            tetronimo.moveTetronimo('left');
+            tetromino.moveTetromino('left');
         }
         else if (moveRightKey.justUp)
         {
 
-            tetronimo.moveTetronimo('right');
+            tetromino.moveTetromino('right');
+        }
+
+
+        for (var i=0;i<10;i++) {
+            for(var j = 0; j<10; j++)
+                if(landed[i][j]!=0)
+                    game.add.sprite(i * cubesize, j * cubesize, 'cube');
         }
 
 
     }
-    function progressTetronimo() {
-        tetronimo.moveTetronimo('down');
+    function progressTetromino() {
+
+        tetromino.moveTetromino('down');
+        var land = false;
+        var potentialTopLeft = tetromino.topLeft;
+        potentialTopLeft.y++;
+        for (var row = 0; row < tetromino.shape.length; row++) {
+            for (var col = 0; col < tetromino.shape[row].length; col++) {
+                if (tetromino.shape[row][col] != 0) {
+                    if ((row + potentialTopLeft.x >= landed.length)) {
+                        land = true;
+                    }
+                    else if ((landed[row + potentialTopLeft.x][col + potentialTopLeft.y] != 0)) {
+                        land = true;
+                    }
+                }
+            }
+        }
+        if(land)
+        for (var row = 0; row < tetromino.shape.length; row++) {
+            for (var col = 0; col < tetromino.shape[row].length; col++) {
+                if (tetromino.shape[row][col] != 0) {
+                    landed[row + tetromino.topLeft.x][col + tetromino.topLeft.y] = tetromino.shape[row][col];
+                    tetromino.destroy();
+                }
+            }
+        }
 
     }
-    function createTetronimo(){
+    function createTetromino(){
 
         var topLeft = new Phaser.Point(4,4);
-        tetronimo = new Tetronimo(this.game,topLeft,0,'T');
+        tetromino = new Tetromino(this.game,topLeft,0,'T');
 
     }
 
     function rotate(){
 
-        tetronimo.squares[0].destroy();
-        tetronimo.squares[1].destroy();
-        tetronimo.squares[2].destroy();
-        tetronimo.squares[3].destroy();
+        tetromino.squares[0].destroy();
+        tetromino.squares[1].destroy();
+        tetromino.squares[2].destroy();
+        tetromino.squares[3].destroy();
 
-        var newRotation = tetronimo.currentRotation;
+        var newRotation = tetromino.currentRotation;
         if(newRotation<3) newRotation++;
         else newRotation = 0;
-        tetronimo = new Tetronimo(this.game,tetronimo.topLeft,newRotation,tetronimo.type);
+        tetromino = new Tetromino(this.game,tetromino.topLeft,newRotation,tetromino.type);
 
 
     }
