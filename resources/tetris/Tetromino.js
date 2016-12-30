@@ -32,6 +32,88 @@ var shapeT = [
         [1, 0]],
 
 ];
+var shapeZ = [
+    [[1, 1, 0],
+        [0, 1, 1]],
+
+    [[0, 1],
+        [1, 1],
+        [1, 0]],
+
+    [[1, 1, 0],
+     [0, 1, 1]],
+
+    [[0, 1],
+        [1, 1],
+        [1, 0]],
+
+];
+var shapeZrev = [
+    [[0, 1, 1],
+        [1, 1, 0]],
+
+    [[1, 0],
+        [1, 1],
+        [0, 1]],
+
+    [[0, 1, 1],
+        [1, 1, 0]],
+
+    [[1, 0],
+        [1, 1],
+        [0, 1]],
+
+];
+
+var shapeJrev = [
+    [[1, 0, 0],
+        [1, 0, 0],
+        [1, 1, 0]],
+
+    [[1, 1, 1],
+        [1, 0, 0]],
+
+    [[0, 1, 1],
+        [0, 0, 1],
+        [0, 0, 1]],
+
+    [[0, 0, 1],
+        [1, 1, 1]],
+];
+
+
+var shapeO = [
+    [[1, 1],
+        [1, 1]],
+
+    [[1, 1],
+        [1, 1]],
+
+    [[1, 1],
+        [1, 1]],
+
+    [[1, 1],
+        [1, 1]],
+
+];
+
+var shapeI = [
+    [[1],
+    [1],
+    [1],
+    [1]],
+
+    [[1, 1,1,1]],
+
+    [[0,1],
+        [0,1],
+        [0,1],
+        [0,1]],
+
+    [[1, 1,1,1]],
+
+];
+
 
 
 Tetromino = function (game, topLeft, currentRotation, type) {
@@ -53,14 +135,38 @@ Tetromino.prototype = {
 
     drawsquares: function () {
 
+        this.shapeArray;
+
         this.shape = null;
 
         switch (this.type){
-            case 'J':
+            case 0:
                 this.shape = shapeJ[this.currentRotation];
+                this.shapeArray = shapeJ;
                 break;
-            case 'T':
+            case 1:
                 this.shape = shapeT[this.currentRotation];
+                this.shapeArray = shapeT;
+                break;
+            case 2:
+                this.shape = shapeJrev[this.currentRotation];
+                this.shapeArray = shapeJrev;
+                break;
+            case 3:
+                this.shape = shapeI[this.currentRotation];
+                this.shapeArray = shapeI;
+                break;
+            case 4:
+                this.shape = shapeO[this.currentRotation];
+                this.shapeArray = shapeO;
+                break;
+            case 5:
+                this.shape = shapeZ[this.currentRotation];
+                this.shapeArray = shapeZ;
+                break;
+            case 6:
+                this.shape = shapeZrev[this.currentRotation];
+                this.shapeArray = shapeZrev;
                 break;
 
         }
@@ -68,8 +174,13 @@ Tetromino.prototype = {
         var counter = 0;
         for (var i = 0; i < this.shape.length; i++)
             for (var j = 0; j < this.shape[i].length; j++)
-                if (this.shape[i][j] != 0)
-                    this.squares[counter++] = game.add.sprite(this.topLeft.x * cubesize + j * cubesize, this.topLeft.y * cubesize + i * cubesize, 'cube');
+                if (this.shape[i][j] != 0) {
+                    this.squares[counter] = game.add.sprite(this.topLeft.x * cubesize + j * cubesize + OffsetX, this.topLeft.y * cubesize + i * cubesize + OffsetY, this.type.toString());
+
+                    this.squares[counter].animations.add('idle', [0, 1, 2, 3], 3, true);
+                    this.squares[counter].animations.play('idle');
+                    counter++;
+                }
     },
 
     moveTetromino: function (dir) {

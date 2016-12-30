@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Phaser - Making your first game, part 3</title>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <script src="Tetromino.js"></script>
@@ -15,22 +15,34 @@
 
 <script type="text/javascript">
 
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
-    var landed = [];
+    var landed;
 
     var cubesize = 32;
+    var OffsetX = 256;
+    var OffsetY = 64;
 
     var tetromino = null;
 
     var cursors;
 
+    var moveDownKey;
+    var moveUpKey;
     var moveLeftKey;
     var moveRightKey;
 
     function preload() {
 
-        game.load.image('cube', 'blocks/RED_block_1.png');
+        //game.load.image('cube', 'blocks/RED_block_1.png');
+        game.load.spritesheet('0', 'blocks/red_block_strip.png', 32, 32);
+        game.load.spritesheet('1', 'blocks/red_block_strip.png', 32, 32);
+        game.load.spritesheet('2', 'blocks/green_block_strip.png', 32, 32);
+        game.load.spritesheet('3', 'blocks/green_block_strip.png', 32, 32);
+        game.load.spritesheet('4', 'blocks/yellow_block_strip.png', 32, 32);
+        game.load.spritesheet('5', 'blocks/purple_block_strip.png', 32, 32);
+        game.load.spritesheet('6', 'blocks/purple_block_strip.png', 32, 32);
+
     }
 
     function create() {
@@ -41,19 +53,24 @@
         tetromino.enableBody = true;
         game.input.mouse.capture = true;
 
-        for (var i=0;i<15;i++) {
-            landed[i] = [];
-            for(var j = 0; j<15; j++)
-                landed[i][j]=0;
+        landed = new Array(16);
+        for (var i = 0; i < 16; i++) {
+            landed[i] = new Array(10);
+        }
+
+        for (i = 0; i < 16; i++) {
+            for (var j = 0; j < 10; j++)
+                landed[i][j] = 0;
         }
 
 
-
-        game.time.events.loop(Phaser.Timer.SECOND * 1, progressTetromino,  this);
+        game.time.events.loop(Phaser.Timer.SECOND * 1, progressTetromino, this);
 
         cursors = game.input.keyboard.createCursorKeys();
         moveLeftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         moveRightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        moveDownKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        moveUpKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
 
     }
 
@@ -61,77 +78,149 @@
 
         game.input.onDown.add(rotate, this);
         //cursors.up.isDown.add(progressTetromino,this);
-        if (moveLeftKey.justUp)
-        {
+        if (moveLeftKey.justUp) {
+            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+            potentialTopLeft.x--;
 
-            tetromino.moveTetromino('left');
+            var invalid = checkValidMovement(potentialTopLeft);
+
+            if (!invalid)
+                tetromino.moveTetromino('left');
         }
-        else if (moveRightKey.justUp)
-        {
+        else if (moveRightKey.justUp) {
 
-            tetromino.moveTetromino('right');
+            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+            potentialTopLeft.x++;
+
+            var invalid = checkValidMovement(potentialTopLeft);
+
+            if (!invalid)
+                tetromino.moveTetromino('right');
+        }
+        else if (moveDownKey.justUp) {
+            progressTetromino();
+        }
+        else if (moveUpKey.justUp) {
+            rotate();
         }
 
 
-        for (var i=0;i<10;i++) {
-            for(var j = 0; j<10; j++)
-                if(landed[i][j]!=0)
-                    game.add.sprite(i * cubesize, j * cubesize, 'cube');
+        for (var i = 0; i < 16; i++) {
+            for (var j = 0; j < 10; j++)
+                if (landed[i][j] != 0)
+                    game.add.sprite(j * cubesize + OffsetX, i * cubesize + OffsetY, landed[i][j].toString());
         }
 
 
+    }
+
+    function checkValidMovement(potentialTopLeft) {
+
+        var invalid = false;
+        for (var row = 0; row < tetromino.shape.length; row++) {
+            for (var col = 0; col < tetromino.shape[row].length; col++) {
+                if (tetromino.shape[row][col] != 0) {
+                    if (col + potentialTopLeft.x < 0) {
+                        invalid = true;
+                    }
+                    if (col + potentialTopLeft.x >= landed[0].length) {
+                        invalid = true;
+                    }
+                    if (landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0) {
+                        invalid = true;
+                    }
+                }
+            }
+        }
+        return invalid;
     }
     function progressTetromino() {
 
-        tetromino.moveTetromino('down');
-        var land = false;
-        var potentialTopLeft = tetromino.topLeft;
-        potentialTopLeft.y++;
-        for (var row = 0; row < tetromino.shape.length; row++) {
-            for (var col = 0; col < tetromino.shape[row].length; col++) {
-                if (tetromino.shape[row][col] != 0) {
-                    if ((row + potentialTopLeft.x >= landed.length)) {
-                        land = true;
-                    }
-                    else if ((landed[row + potentialTopLeft.x][col + potentialTopLeft.y] != 0)) {
-                        land = true;
+        if (tetromino != null) {
+            var land = false;
+            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+            potentialTopLeft.y++;
+            for (var row = 0; row < tetromino.shape.length; row++) {
+                for (var col = 0; col < tetromino.shape[row].length; col++) {
+                    if (tetromino.shape[row][col] != 0) {
+                        if ((row + potentialTopLeft.y >= landed.length)) {
+                            land = true;
+                        }
+                        else if ((landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0)) {
+                            land = true;
+                        }
                     }
                 }
             }
-        }
-        if(land)
-        for (var row = 0; row < tetromino.shape.length; row++) {
-            for (var col = 0; col < tetromino.shape[row].length; col++) {
-                if (tetromino.shape[row][col] != 0) {
-                    landed[row + tetromino.topLeft.x][col + tetromino.topLeft.y] = tetromino.shape[row][col];
-                    tetromino.destroy();
-                }
+
+            if (!land) {
+                tetromino.moveTetromino('down');
             }
+
+            if (land) {
+                for (var row = 0; row < tetromino.shape.length; row++) {
+                    for (var col = 0; col < tetromino.shape[row].length; col++) {
+                        if (tetromino.shape[row][col] != 0) {
+                            landed[row + tetromino.topLeft.y][col + tetromino.topLeft.x] = tetromino.type;
+                        }
+                    }
+                }
+
+                tetromino = null;
+                createTetromino();
+            }
+
         }
+    }
+    function createTetromino() {
+
+        var topLeft = new Phaser.Point(5, 0);
+        var type = game.rnd.integerInRange(0, 6);
+        var rotation = game.rnd.integerInRange(0, 3);
+
+        tetromino = new Tetromino(this.game, topLeft, rotation, type);
 
     }
-    function createTetromino(){
 
-        var topLeft = new Phaser.Point(4,4);
-        tetromino = new Tetromino(this.game,topLeft,0,'T');
+    function rotate() {
 
-    }
-
-    function rotate(){
-
-        tetromino.squares[0].destroy();
-        tetromino.squares[1].destroy();
-        tetromino.squares[2].destroy();
-        tetromino.squares[3].destroy();
-
+        var invalid = false;
         var newRotation = tetromino.currentRotation;
-        if(newRotation<3) newRotation++;
+        if (newRotation < 3) newRotation++;
         else newRotation = 0;
-        tetromino = new Tetromino(this.game,tetromino.topLeft,newRotation,tetromino.type);
+        var potentialShape = tetromino.shapeArray[newRotation];
+
+        for (var row = 0; row < potentialShape.length; row++) {
+            for (var col = 0; col < potentialShape[row].length; col++) {
+                if (potentialShape[row][col] != 0) {
+                    if (col + tetromino.topLeft.x < 0) {
+                        invalid = true;
+                    }
+                    if (col + tetromino.topLeft.x >= landed[0].length) {
+                        invalid = true;
+                    }
+                    if (row + tetromino.topLeft.y >= landed.length) {
+                        invalid = true;
+                    }
+                    if (landed[row + tetromino.topLeft.y][col + tetromino.topLeft.x] != 0) {
+                        invalid = true;
+                    }
+                }
+            }
+        }
+
+        if (!invalid) {
+
+            tetromino.squares[0].destroy();
+            tetromino.squares[1].destroy();
+            tetromino.squares[2].destroy();
+            tetromino.squares[3].destroy();
+
+            tetromino = new Tetromino(this.game, tetromino.topLeft, newRotation, tetromino.type);
+        }
 
 
     }
-
 
 
 </script>
