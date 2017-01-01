@@ -18,6 +18,7 @@
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
     var landed;
+    var landedSprites;
 
     var cubesize = 32;
     var OffsetX = 256;
@@ -35,6 +36,7 @@
     function preload() {
 
         //game.load.image('cube', 'blocks/RED_block_1.png');
+        game.load.image('clear', 'blocks/clear.png');
         game.load.spritesheet('0', 'blocks/red_block_strip.png', 32, 32);
         game.load.spritesheet('1', 'blocks/red_block_strip.png', 32, 32);
         game.load.spritesheet('2', 'blocks/green_block_strip.png', 32, 32);
@@ -53,9 +55,23 @@
         tetromino.enableBody = true;
         game.input.mouse.capture = true;
 
+        var graphics = game.add.graphics(0, 0);
+
+        // set a fill and line style
+        graphics.beginFill(0xFF3300, 0);
+        graphics.lineStyle(3, 0xffd900, 1);
+
+        graphics.drawRect(OffsetX, OffsetY, cubesize*10, cubesize*16);
+
+        window.graphics = graphics;
+
         landed = new Array(16);
         for (var i = 0; i < 16; i++) {
             landed[i] = new Array(10);
+        }
+        landedSprites = new Array(16);
+        for (var i = 0; i < 16; i++) {
+            landedSprites[i] = new Array(10);
         }
 
         for (i = 0; i < 16; i++) {
@@ -71,6 +87,8 @@
         moveRightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         moveDownKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         moveUpKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+
+        drawBoardState();
 
     }
 
@@ -105,11 +123,6 @@
         }
 
 
-        for (var i = 0; i < 16; i++) {
-            for (var j = 0; j < 10; j++)
-                if (landed[i][j] != 0)
-                    game.add.sprite(j * cubesize + OffsetX, i * cubesize + OffsetY, landed[i][j].toString());
-        }
 
 
     }
@@ -166,12 +179,65 @@
                     }
                 }
 
+
+                tetromino.squares[0].destroy();
+                tetromino.squares[1].destroy();
+                tetromino.squares[2].destroy();
+                tetromino.squares[3].destroy();
                 tetromino = null;
                 createTetromino();
+
+                drawBoardState();
+                checkClearLines();
+
+                drawBoardState();
             }
 
         }
     }
+
+    function checkClearLines() {
+        var cleared = false;
+        for (var row = 0; row < landed.length; row++) {
+            var allTaken = true;
+            for (var col = 0; col < landed[row].length; col++) {
+                if (landed[row][col] == 0)
+                    allTaken = false;
+            }
+            if (allTaken) {
+                for (var i = row; i >= 0; i--) {
+                    if (i != 0) //if i-1 row doesn't have all 0
+                        landed.swap(i, i - 1);
+                    else {
+                        cleared = true;
+                        for (var col = 0; col < landed[i].length; col++)
+                            landed[i][col] = 0;
+                    }
+                }
+                break;
+            }
+
+        }
+        if (cleared){
+            checkClearLines();
+        }
+    }
+
+
+    Array.prototype.swap = function (row1, row2) {
+
+        /*for(var i = 0; i<landed[row1].length; i++) {
+         var temp;
+         temp = landed[row2][i];
+         landed[row2][i] = landed[row1][i];
+         landed[row1][i] = temp;
+         }*/
+
+        var temp = landed[row1];
+        landed[row1] = landed[row2];
+        landed[row2] = temp;
+    };
+
     function createTetromino() {
 
         var topLeft = new Phaser.Point(5, 0);
@@ -220,6 +286,21 @@
         }
 
 
+    }
+
+    function drawBoardState(){
+        for (var i = 0; i < 16; i++) {
+            for (var j = 0; j < 10; j++) {
+                if (landed[i][j] != 0 && landedSprites[i][j] == null) {
+                    landedSprites[i][j] = game.add.sprite(j * cubesize + OffsetX, i * cubesize + OffsetY, landed[i][j].toString());
+                }
+                else if (landed[i][j] == 0 && landedSprites[i][j] != null) {
+                    landedSprites[i][j].destroy();
+                    landedSprites[i][j] = null;
+
+                }
+            }
+        }
     }
 
 
