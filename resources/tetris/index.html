@@ -20,6 +20,10 @@
     var landed;
     var landedSprites;
 
+
+    var score = 0;
+    var scoreText;
+
     var cubesize = 32;
     var OffsetX = 256;
     var OffsetY = 64;
@@ -33,17 +37,18 @@
     var moveLeftKey;
     var moveRightKey;
 
+    var gameOver = false;
+
     function preload() {
 
         //game.load.image('cube', 'blocks/RED_block_1.png');
-        game.load.image('clear', 'blocks/clear.png');
-        game.load.spritesheet('0', 'blocks/red_block_strip.png', 32, 32);
         game.load.spritesheet('1', 'blocks/red_block_strip.png', 32, 32);
         game.load.spritesheet('2', 'blocks/green_block_strip.png', 32, 32);
         game.load.spritesheet('3', 'blocks/green_block_strip.png', 32, 32);
         game.load.spritesheet('4', 'blocks/yellow_block_strip.png', 32, 32);
         game.load.spritesheet('5', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('6', 'blocks/purple_block_strip.png', 32, 32);
+        game.load.spritesheet('7', 'blocks/red_block_strip.png', 32, 32);
 
     }
 
@@ -61,7 +66,8 @@
         graphics.beginFill(0xFF3300, 0);
         graphics.lineStyle(3, 0xffd900, 1);
 
-        graphics.drawRect(OffsetX, OffsetY, cubesize*10, cubesize*16);
+        graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
+
 
         window.graphics = graphics;
 
@@ -90,40 +96,50 @@
 
         drawBoardState();
 
+        scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#fff'});
+
     }
 
     function update() {
 
-        game.input.onDown.add(rotate, this);
-        //cursors.up.isDown.add(progressTetromino,this);
-        if (moveLeftKey.justUp) {
-            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
-            potentialTopLeft.x--;
 
-            var invalid = checkValidMovement(potentialTopLeft);
+        if(gameOver){
+            graphics.beginFill(0xFF3300, 1);
+            graphics.lineStyle(3, 0xffd900, 1);
+            graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
 
-            if (!invalid)
-                tetromino.moveTetromino('left');
         }
-        else if (moveRightKey.justUp) {
+        else {
 
-            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
-            potentialTopLeft.x++;
+            game.input.onDown.add(rotate, this);
+            //cursors.up.isDown.add(progressTetromino,this);
+            if (moveLeftKey.justUp) {
+                var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+                potentialTopLeft.x--;
+                var invalid = checkValidMovement(potentialTopLeft);
 
-            var invalid = checkValidMovement(potentialTopLeft);
 
-            if (!invalid)
-                tetromino.moveTetromino('right');
+                if (!invalid)
+                    tetromino.moveTetromino('left');
+            }
+            else if (moveRightKey.justUp) {
+
+                var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+                potentialTopLeft.x++;
+
+                var invalid = checkValidMovement(potentialTopLeft);
+
+
+                if (!invalid)
+                    tetromino.moveTetromino('right');
+            }
+            else if (moveDownKey.justUp) {
+                progressTetromino();
+            }
+            else if (moveUpKey.justUp) {
+                rotate();
+            }
         }
-        else if (moveDownKey.justUp) {
-            progressTetromino();
-        }
-        else if (moveUpKey.justUp) {
-            rotate();
-        }
-
-
-
 
     }
 
@@ -139,9 +155,10 @@
                     if (col + potentialTopLeft.x >= landed[0].length) {
                         invalid = true;
                     }
-                    if (landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0) {
-                        invalid = true;
-                    }
+                    if (row + potentialTopLeft.y >= 0 && col + potentialTopLeft.x >= 0)
+                        if (landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0) {
+                            invalid = true;
+                        }
                 }
             }
         }
@@ -150,51 +167,64 @@
     function progressTetromino() {
 
         if (tetromino != null) {
-            var land = false;
-            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
-            potentialTopLeft.y++;
-            for (var row = 0; row < tetromino.shape.length; row++) {
-                for (var col = 0; col < tetromino.shape[row].length; col++) {
-                    if (tetromino.shape[row][col] != 0) {
-                        if ((row + potentialTopLeft.y >= landed.length)) {
-                            land = true;
-                        }
-                        else if ((landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0)) {
-                            land = true;
-                        }
-                    }
-                }
-            }
-
-            if (!land) {
+            /*if (tetromino.topLeft.y < 0) {
                 tetromino.moveTetromino('down');
             }
-
-            if (land) {
+            else {*/
+                var land = false;
+                var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+                potentialTopLeft.y++;
                 for (var row = 0; row < tetromino.shape.length; row++) {
                     for (var col = 0; col < tetromino.shape[row].length; col++) {
                         if (tetromino.shape[row][col] != 0) {
-                            landed[row + tetromino.topLeft.y][col + tetromino.topLeft.x] = tetromino.type;
+                            if (row + potentialTopLeft.y >= 0 && col + potentialTopLeft.x >= 0) {
+                                if ((row + potentialTopLeft.y >= landed.length)) {
+                                    land = true;
+                                }
+                                else if ((landed[row + potentialTopLeft.y][col + potentialTopLeft.x] != 0)) {
+                                    land = true;
+                                }
+                            }
                         }
                     }
                 }
 
+                if (!land) {
+                    tetromino.moveTetromino('down');
+                }
 
-                tetromino.squares[0].destroy();
-                tetromino.squares[1].destroy();
-                tetromino.squares[2].destroy();
-                tetromino.squares[3].destroy();
-                tetromino = null;
-                createTetromino();
+                if (land) {
+                    for (var row = 0; row < tetromino.shape.length; row++) {
+                        for (var col = 0; col < tetromino.shape[row].length; col++) {
+                            if (tetromino.shape[row][col] != 0) {
+                                if(row + potentialTopLeft.y <= 0) {
+                                    gameOver = true;
+                                    return;
+                                }
+                                landed[row + tetromino.topLeft.y][col + tetromino.topLeft.x] = tetromino.type;
+                            }
+                        }
+                    }
 
-                drawBoardState();
-                checkClearLines();
 
-                drawBoardState();
-            }
+                    tetromino.squares[0].destroy();
+                    tetromino.squares[1].destroy();
+                    tetromino.squares[2].destroy();
+                    tetromino.squares[3].destroy();
+                    tetromino = null;
+                    createTetromino();
 
+                    drawBoardState();
+                    checkClearLines();
+
+                    drawBoardState();
+
+                }
+
+            //}
         }
     }
+
 
     function checkClearLines() {
         var cleared = false;
@@ -218,8 +248,10 @@
             }
 
         }
-        if (cleared){
+        if (cleared) {
             checkClearLines();
+            score += 100;
+            scoreText.text = 'Score: ' + score;
         }
     }
 
@@ -240,8 +272,8 @@
 
     function createTetromino() {
 
-        var topLeft = new Phaser.Point(5, 0);
-        var type = game.rnd.integerInRange(0, 6);
+        var topLeft = new Phaser.Point(5, -3);
+        var type = game.rnd.integerInRange(1, 7);
         var rotation = game.rnd.integerInRange(0, 3);
 
         tetromino = new Tetromino(this.game, topLeft, rotation, type);
@@ -268,6 +300,8 @@
                     if (row + tetromino.topLeft.y >= landed.length) {
                         invalid = true;
                     }
+
+                    if (col + tetromino.topLeft.x >= 0 && row + tetromino.topLeft.y >= 0)
                     if (landed[row + tetromino.topLeft.y][col + tetromino.topLeft.x] != 0) {
                         invalid = true;
                     }
@@ -288,7 +322,7 @@
 
     }
 
-    function drawBoardState(){
+    function drawBoardState() {
         for (var i = 0; i < 16; i++) {
             for (var j = 0; j < 10; j++) {
                 if (landed[i][j] != 0 && landedSprites[i][j] == null) {

@@ -140,10 +140,6 @@ Tetromino.prototype = {
         this.shape = null;
 
         switch (this.type){
-            case 0:
-                this.shape = shapeJ[this.currentRotation];
-                this.shapeArray = shapeJ;
-                break;
             case 1:
                 this.shape = shapeT[this.currentRotation];
                 this.shapeArray = shapeT;
@@ -167,6 +163,10 @@ Tetromino.prototype = {
             case 6:
                 this.shape = shapeZrev[this.currentRotation];
                 this.shapeArray = shapeZrev;
+                break;
+            case 7:
+                this.shape = shapeJ[this.currentRotation];
+                this.shapeArray = shapeJ;
                 break;
 
         }
