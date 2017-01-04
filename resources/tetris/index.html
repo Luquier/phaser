@@ -103,6 +103,11 @@
     function update() {
 
 
+        for (var i = 0; i < tetromino.squares.length; i++) {
+            tetromino.squares[i].inputEnabled = true;
+            tetromino.squares[i].events.onInputUp.add(rotate, this);
+        }
+
         if(gameOver){
             graphics.beginFill(0xFF3300, 1);
             graphics.lineStyle(3, 0xffd900, 1);
@@ -111,7 +116,7 @@
         }
         else {
 
-            game.input.onDown.add(rotate, this);
+            game.input.onDown.add(checkMoveInput, this);
             //cursors.up.isDown.add(progressTetromino,this);
             if (moveLeftKey.justUp) {
                 var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
@@ -140,6 +145,35 @@
                 rotate();
             }
         }
+
+    }
+
+    function checkMoveInput(){
+
+        if(game.input.x > tetromino.squares[1].x + 32){
+            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+            potentialTopLeft.x++;
+
+            var invalid = checkValidMovement(potentialTopLeft);
+
+
+            if (!invalid)
+                tetromino.moveTetromino('right');
+        }
+        else if(game.input.x < tetromino.squares[1].x - 32){
+            var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
+            potentialTopLeft.x--;
+            var invalid = checkValidMovement(potentialTopLeft);
+
+
+            if (!invalid)
+                tetromino.moveTetromino('left');
+        }
+        else if(game.input.y > tetromino.squares[1].y + 32){
+            progressTetromino();
+        }
+
+
 
     }
 
