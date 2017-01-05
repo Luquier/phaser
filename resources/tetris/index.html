@@ -14,23 +14,12 @@
 <body>
 
 <script type="text/javascript">
-    var configuration = {
-        'canvas_width_max' : 2048,
-        'canvas_width' : 1000,
-        'canvas_height_max' : 2048,
-        'canvas_height' : 650,
-        'scale_ratio' : 1,
-        'aspect_ratio' : 1
-    };
 
-    configuration.canvas_width = window.screen.availWidth * window.devicePixelRatio;
-    configuration.canvas_height = window.screen.availHeight * window.devicePixelRatio;
-    configuration.aspect_ratio = configuration.canvas_width / configuration.canvas_height;
-    if (configuration.aspect_ratio < 1) configuration.scale_ratio = configuration.canvas_height / configuration.canvas_height_max;
-    else configuration.scale_ratio = configuration.canvas_width / configuration.canvas_width_max;
 
-    var game = new Phaser.Game(configuration.canvas_width, configuration.canvas_height, Phaser.CANVAS, 'gamewindow', {preload: preload, create: create, update: update});
-    //var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+    var game = new Phaser.Game(window.innerWidth, window.innerHeight , Phaser.CANVAS, 'gamewindow', {preload: preload, create: create, update: update});
+
+    var idealHeight = 900;
+    var scaleRatio = idealHeight / window.innerHeight;
 
     var landed;
     var landedSprites;
@@ -39,9 +28,10 @@
     var score = 0;
     var scoreText;
 
-    var cubesize = 32 * configuration.scale_ratio;
-    var OffsetX = 256;
-    var OffsetY = 64;
+    var cubesize = 32 * scaleRatio;
+    var OffsetX = (window.innerWidth - cubesize*10)/2;
+    var OffsetY = (window.innerHeight - cubesize*16)/2;
+
 
     var tetromino = null;
 
@@ -376,7 +366,7 @@
             for (var j = 0; j < 10; j++) {
                 if (landed[i][j] != 0 && landedSprites[i][j] == null) {
                     landedSprites[i][j] = game.add.sprite(j * cubesize + OffsetX, i * cubesize + OffsetY, landed[i][j].toString());
-                    landedSprites[i][j].scale.set(configuration.scale_ratio);
+                    landedSprites[i][j].scale.set(scaleRatio);
                 }
                 else if (landed[i][j] == 0 && landedSprites[i][j] != null) {
                     landedSprites[i][j].destroy();

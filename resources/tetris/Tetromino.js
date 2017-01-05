@@ -177,7 +177,7 @@ Tetromino.prototype = {
                 if (this.shape[i][j] != 0) {
                     this.squares[counter] = game.add.sprite(this.topLeft.x * cubesize + j * cubesize + OffsetX, this.topLeft.y * cubesize + i * cubesize + OffsetY, this.type.toString());
 
-                    this.squares[counter].scale.set(configuration.scale_ratio);
+                    this.squares[counter].scale.set(scaleRatio);
                     this.squares[counter].animations.add('idle', [0, 1, 2, 3], 3, true);
                     this.squares[counter].animations.play('idle');
                     counter++;
