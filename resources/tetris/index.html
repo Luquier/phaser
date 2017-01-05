@@ -155,7 +155,7 @@
 
     function checkMoveInput(){
 
-        if(game.input.x > tetromino.squares[1].x + 32){
+        if(game.input.x > tetromino.squares[1].x + 128){
             var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
             potentialTopLeft.x++;
 
@@ -165,7 +165,7 @@
             if (!invalid)
                 tetromino.moveTetromino('right');
         }
-        else if(game.input.x < tetromino.squares[1].x - 32){
+        else if(game.input.x < tetromino.squares[1].x - 128){
             var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
             potentialTopLeft.x--;
             var invalid = checkValidMovement(potentialTopLeft);
@@ -174,9 +174,11 @@
             if (!invalid)
                 tetromino.moveTetromino('left');
         }
-        else if(game.input.y > tetromino.squares[1].y + 32){
+        else if(game.input.y > tetromino.squares[1].y + 128){
             progressTetromino();
         }
+        else
+            rotate();
 
 
 
