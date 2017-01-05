@@ -26,7 +26,9 @@
 
 
     var score = 0;
+    var highScore = 0;
     var scoreText;
+    var highScoreText;
 
     var cubesize = 32 * scaleRatio;
     var OffsetX = (window.innerWidth - cubesize*10)/2;
@@ -43,6 +45,7 @@
     var moveRightKey;
 
     var gameOver = false;
+    var restartButton;
 
     function preload() {
 
@@ -54,7 +57,7 @@
         game.load.spritesheet('5', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('6', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('7', 'blocks/red_block_strip.png', 32, 32);
-        game.load.image('button', 'png/buttonDefault.png', 193, 71);
+        game.load.image('button', 'png/buttonDefault.png');
 
     }
 
@@ -70,7 +73,7 @@
 
         // set a fill and line style
         graphics.beginFill(0xFF3300, 0);
-        graphics.lineStyle(3, 0xffd900, 1);
+        graphics.lineStyle(3, 0x42A8FF, 1);
 
         graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
 
@@ -102,7 +105,10 @@
 
         drawBoardState();
 
-        scoreText = game.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#fff'});
+        scoreText = game.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#fff'});
+        highScore = localStorage.getItem('highScore');
+        if(highScore == null) highScore = 0;
+        highScoreText = game.add.text(16, 48, 'HighScore: '+highScore, {fontSize: '32px', fill: '#fff'});
 
     }
 
@@ -115,6 +121,8 @@
         }
 
         if(gameOver){
+            if(score > highScore)
+                localStorage.setItem('highScore', score.toString());
             graphics.beginFill(0xFF3300, 1);
             graphics.lineStyle(3, 0xffd900, 1);
             graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
@@ -122,8 +130,7 @@
             // add game over text
             game_over_text = game.add.text(this.game.world.width / 2, this.game.world.height * 0.4, "Game Over", {fontSize: '32px', fill: '#fff'});
             game_over_text.anchor.setTo(0.5);
-
-
+            restartButton = game.add.button(game.world.centerX - 95, this.game.world.height * 0.4 + 150, 'button', restartBtn);
 
         }
         else {
@@ -158,6 +165,10 @@
             }
         }
 
+    }
+
+    function restartBtn(){
+        location.reload();
     }
 
 
