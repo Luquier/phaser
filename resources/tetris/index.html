@@ -54,6 +54,7 @@
         game.load.spritesheet('5', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('6', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('7', 'blocks/red_block_strip.png', 32, 32);
+        game.load.image('button', 'png/buttonDefault.png', 193, 71);
 
     }
 
@@ -73,8 +74,8 @@
 
         graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
 
-
         window.graphics = graphics;
+
 
         landed = new Array(16);
         for (var i = 0; i < 16; i++) {
@@ -117,6 +118,12 @@
             graphics.beginFill(0xFF3300, 1);
             graphics.lineStyle(3, 0xffd900, 1);
             graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
+            var game_over_text;
+            // add game over text
+            game_over_text = game.add.text(this.game.world.width / 2, this.game.world.height * 0.4, "Game Over", {fontSize: '32px', fill: '#fff'});
+            game_over_text.anchor.setTo(0.5);
+
+
 
         }
         else {
@@ -153,9 +160,11 @@
 
     }
 
+
     function checkMoveInput(){
 
-        if(game.input.x > tetromino.squares[1].x + 128){
+        var OffsetX = (window.innerWidth - cubesize*10)/2;
+        if(game.input.x > window.innerWidth - OffsetX - 50){
             var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
             potentialTopLeft.x++;
 
@@ -165,7 +174,7 @@
             if (!invalid)
                 tetromino.moveTetromino('right');
         }
-        else if(game.input.x < tetromino.squares[1].x - 128){
+        else if(game.input.x < OffsetX + 50){
             var potentialTopLeft = new Phaser.Point(tetromino.topLeft.x, tetromino.topLeft.y);
             potentialTopLeft.x--;
             var invalid = checkValidMovement(potentialTopLeft);
@@ -174,7 +183,7 @@
             if (!invalid)
                 tetromino.moveTetromino('left');
         }
-        else if(game.input.y > tetromino.squares[1].y + 128){
+        else if(game.input.y > window.innerHeight - OffsetY - 50){
             progressTetromino();
         }
         else
