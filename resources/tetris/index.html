@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Phaser - Making your first game, part 3</title>
+    <title>Tetris game with Phaser</title>
     <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <script src="Tetromino.js"></script>
     <style type="text/css">
@@ -16,10 +16,10 @@
 <script type="text/javascript">
 
 
-    var game = new Phaser.Game(window.innerWidth, window.innerHeight , Phaser.CANVAS, 'gamewindow', {preload: preload, create: create, update: update});
+    var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'gamewindow', {preload: preload, create: create, update: update});
 
-    var idealHeight = 900;
-    var scaleRatio = idealHeight / window.innerHeight;
+    var idealHeight = 1000 ;
+    var scaleRatio = Math.round((idealHeight / window.outerHeight)*2)/2;
 
     var landed;
     var landedSprites;
@@ -31,8 +31,8 @@
     var highScoreText;
 
     var cubesize = 32 * scaleRatio;
-    var OffsetX = (window.innerWidth - cubesize*10)/2;
-    var OffsetY = (window.innerHeight - cubesize*16)/2;
+    var OffsetX = (window.innerWidth  - cubesize*10)/2;
+    var OffsetY = (window.innerHeight  - cubesize*16)/2;
 
 
     var tetromino = null;
@@ -57,7 +57,7 @@
         game.load.spritesheet('5', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('6', 'blocks/purple_block_strip.png', 32, 32);
         game.load.spritesheet('7', 'blocks/red_block_strip.png', 32, 32);
-        game.load.image('button', 'png/buttonDefault.png');
+        game.load.image('button', 'blocks/buttonDefault.png');
 
     }
 
@@ -105,10 +105,10 @@
 
         drawBoardState();
 
-        scoreText = game.add.text(16, 16, 'Score: 0', {fontSize: '32px', fill: '#fff'});
+        scoreText = game.add.text(16, 16, 'Score: 0', {font: '32pt Arial', fill: '#fff'});
         highScore = localStorage.getItem('highScore');
         if(highScore == null) highScore = 0;
-        highScoreText = game.add.text(16, 48, 'HighScore: '+highScore, {fontSize: '32px', fill: '#fff'});
+        highScoreText = game.add.text(16, 65, 'HighScore: '+highScore, {font: '32pt Arial', fill: '#fff'});
 
     }
 
@@ -128,7 +128,7 @@
             graphics.drawRect(OffsetX, OffsetY, cubesize * 10, cubesize * 16);
             var game_over_text;
             // add game over text
-            game_over_text = game.add.text(this.game.world.width / 2, this.game.world.height * 0.4, "Game Over", {fontSize: '32px', fill: '#fff'});
+            game_over_text = game.add.text(this.game.world.width / 2, this.game.world.height * 0.4, "Game Over", {font: '32pt Arial', fill: '#fff'});
             game_over_text.anchor.setTo(0.5);
             restartButton = game.add.button(game.world.centerX - 95, this.game.world.height * 0.4 + 150, 'button', restartBtn);
 
