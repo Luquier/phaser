@@ -1,6 +1,6 @@
 # Introduction
 
-Simple Tetris Clone created in Javascript/HTML5 with Phaser.io framework. Move the pieces with the arrow keys and rotate them with the UP key. Playable [here] (http://www2.kmd.keio.ac.jp/~nancy/tetris/).
+Simple Tetris Clone created in Javascript/HTML5 with Phaser.io framework. Move the pieces with the arrow keys and rotate them with the UP key. Playable [here](http://www2.kmd.keio.ac.jp/~nancy/tetris/).
 
 <img src="https://i.imgur.com/rXFvZN0.png">
 
